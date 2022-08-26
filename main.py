@@ -1,6 +1,7 @@
 import shutil
 import os
 import datetime
+import sys
 from pathlib import Path
 from sys import platform
 import subprocess
@@ -35,7 +36,8 @@ def get_sd_card_canon_folder():
             return '/media/CANON_SD/DCIM'
         except:
             print('SD Card not found')
-            return None
+            sys.exit(1)
+
 
 
 def get_unique_dates(source_folder):
@@ -51,6 +53,7 @@ def get_unique_dates(source_folder):
 
 
 def create_folders(source):
+    if get_unique_dates()
     for date in get_unique_dates(source):
         Path(nas_path + '/' + date).mkdir(parents=True, exist_ok=True)
 
