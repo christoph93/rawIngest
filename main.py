@@ -32,8 +32,10 @@ def get_sd_card_canon_folder():
         try:
             subprocess.call('mount -L ' + sd_card_label + ' /media/CANON_SD')
             print(os.listdir('/media/CANON_SD/DCIM'))
+            return '/media/CANON_SD/DCIM'
         except:
             print('SD Card not found')
+            return None
 
 
 def get_unique_dates(source_folder):
