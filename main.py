@@ -1,6 +1,5 @@
 import shutil
 import os
-import win32api
 import datetime
 from pathlib import Path
 from sys import platform
@@ -12,6 +11,7 @@ sd_card_label = 'EOS_DIGITAL'
 
 def get_sd_card_canon_folder():
     if platform == 'win32':
+        import win32api
         drives = win32api.GetLogicalDriveStrings().split('\x00')[:-1]
         canon_folder = ''
         for drive in drives:
