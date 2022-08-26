@@ -53,7 +53,6 @@ def get_unique_dates(source_folder):
 
 
 def create_folders(source):
-    if get_unique_dates()
     for date in get_unique_dates(source):
         Path(nas_path + '/' + date).mkdir(parents=True, exist_ok=True)
 
