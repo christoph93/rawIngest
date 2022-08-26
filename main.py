@@ -4,32 +4,36 @@ import win32api
 import datetime
 from pathlib import Path
 from sys import platform
+import subprocess
 
 nas_path = '//mycloudex2ultra/christoph/CanonIngest'
+sd_card_label = 'EOS_DIGITAL'
 
 
 def get_sd_card_canon_folder():
-
     if platform == 'win32':
         drives = win32api.GetLogicalDriveStrings().split('\x00')[:-1]
+        canon_folder = ''
+        for drive in drives:
+            clean_string = drive.replace('\\', '')
+            folders = os.listdir(clean_string)
+
+            for folder in folders:
+                if folder == 'DCIM':
+                    for f in os.listdir(drive + 'DCIM'):
+                        if f == '100CANON':
+                            canon_folder = drive + 'DCIM\\100CANON'
+                    break
+
+        print('Canon folder is ' + canon_folder)
+        return canon_folder
+
     else:
-        drives =
-
-    canon_folder = ''
-
-    for drive in drives:
-        clean_string = drive.replace('\\', '')
-        folders = os.listdir(clean_string)
-
-        for folder in folders:
-            if folder == 'DCIM':
-                for f in os.listdir(drive + 'DCIM'):
-                    if f == '100CANON':
-                        canon_folder = drive + 'DCIM\\100CANON'
-                break
-
-    print('Canon folder is ' + canon_folder)
-    return canon_folder
+        try:
+            subprocess.call('mount -L ' + sd_card_label + ' /media/CANON_SD')
+            print(os.listdir('/media/CANON_SD/DCIM'))
+        except:
+            print('SD Card not found')
 
 
 def get_unique_dates(source_folder):
