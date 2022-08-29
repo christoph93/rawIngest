@@ -5,9 +5,18 @@ import sys
 from pathlib import Path
 from sys import platform
 import subprocess
+import ftplib
 
-nas_path = '//mycloudex2ultra/christoph/CanonIngest'
+
 sd_card_label = 'EOS_DIGITAL'
+ftp_address = '192.168.178.101'
+
+def get_nas_path():
+  if platform == 'win32':
+    return '//mycloudex2ultra/christoph/CanonIngest'
+
+  return'/media/mycloudex2ultra/CanonIngest'
+
 
 
 def get_sd_card_canon_folder():
@@ -31,11 +40,12 @@ def get_sd_card_canon_folder():
 
     else:
         try:
-            subprocess.call('mount -L ' + sd_card_label + ' /media/CANON_SD')
+            os.system('mount -L ' + sd_card_label + ' /media/CANON_SD/')
             print(os.listdir('/media/CANON_SD/DCIM'))
-            return '/media/CANON_SD/DCIM'
-        except:
+            return '/media/CANON_SD/DCIM/100CANON'
+        except Exception as e:
             print('SD Card not found')
+            print(e)
             sys.exit(1)
 
 
@@ -54,7 +64,9 @@ def get_unique_dates(source_folder):
 
 def create_folders(source):
     for date in get_unique_dates(source):
-        Path(nas_path + '/' + date).mkdir(parents=True, exist_ok=True)
+        print(get_nas_path())
+        print(date)
+        Path(get_nas_path() + '/' + date).mkdir(parents=True, exist_ok=True)
 
 
 def copy_files():
@@ -69,14 +81,20 @@ def copy_files():
         trimmed_date = file_cdate.strftime('%Y-%m-%d')
 
         source_file_path = source_folder + '/' + file
-        target_file_path = nas_path + '/' + trimmed_date + '/' + file
+        target_file_path = get_nas_path() + '/' + trimmed_date + '/' + file
 
         if not os.path.exists(target_file_path):
             print('copying file ' + source_file_path)
-            shutil.copy2(source_file_path, target_file_path)
+            #shutil.copy2(source_file_path, target_file_path)
+            #os.system('cp ' + source_file_path + ' ' + 'target_file_path')
+            session = ftplib.FTP(ftp_address, 'christoph', 'malvado6696')
+            file_to_send = open(source_file_path, 'rb')
+            session.storbinary('canonIngest/' + trimmed_date + '/' + file, file_to_send)
+            file_to_send.close()
             copied_files += 1
 
     print('copied ' + copied_files.__str__() + ' files')
+    session.quit()
 
 
 if __name__ == '__main__':
